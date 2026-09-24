@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Integrated Town Management Corporation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-500:#59A3E0;
+    --sky-600:#3E86C4;
+    --sky-100:#EAF4FC;
+    --navy-900:#0B2A4D;
+    --navy-800:#123A63;
+    --gold-500:#C9A227;
+    --cream:#FBFAF6;
+    --ink:#16232E;
+    --ink-soft:#5C6B7A;
+    --border:#E7E2D6;
+    --surface:#FFFFFF;
+    --shadow:0 18px 46px rgba(11,42,77,0.12);
+    --radius-s:4px;
+    --radius-m:10px;
+    --radius-l:2px;
+    --font-head:'Playfair Display',Georgia,serif;
+    --font-body:'Inter',system-ui,sans-serif;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --cream:#0B1420; --surface:#0F1D2E; --ink:#EAF1FB; --ink-soft:#9FB3CC;
+      --border:#1E3350; --sky-100:#12283F; --shadow:0 18px 46px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --cream:#0B1420; --surface:#0F1D2E; --ink:#EAF1FB; --ink-soft:#9FB3CC;
+    --border:#1E3350; --sky-100:#12283F; --shadow:0 18px 46px rgba(0,0,0,0.5);
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--cream);}
+  *,*::before,*::after{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px;}
+  h1,h2,h3,h4{font-family:var(--font-head);color:var(--ink);margin:0 0 14px;font-weight:600;letter-spacing:-0.01em;}
+  h1{font-size:clamp(36px,5vw,58px);line-height:1.08;}
+  h2{font-size:clamp(28px,3.4vw,40px);line-height:1.15;}
+  h3{font-size:20px;font-family:var(--font-body);font-weight:600;}
+  p{color:var(--ink-soft);margin:0 0 16px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--sky-600);font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;}
+  .eyebrow::before{content:"";width:24px;height:1.5px;background:var(--sky-600);display:inline-block;}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 26px;border-radius:2px;font-weight:600;font-size:13.5px;letter-spacing:0.04em;border:none;transition:all .2s;}
+  .btn-primary{background:var(--sky-500);color:#fff;}
+  .btn-primary:hover{background:var(--sky-600);}
+  .btn-outline{background:transparent;color:var(--navy-900);border:1.5px solid var(--navy-900);}
+  .btn-outline:hover{background:var(--navy-900);color:#fff;}
+  .btn-on-dark{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.55);}
+  .btn-on-dark:hover{background:#fff;color:var(--navy-900);}
+
+  /* ---------- Header ---------- */
+  header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:60;background:var(--surface);border-bottom:1px solid var(--border);}
+  .nav-row{display:flex;align-items:center;gap:34px;padding:16px 32px;max-width:1240px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .brand svg{width:36px;height:36px;flex-shrink:0;}
+  .brand-text{font-family:var(--font-head);line-height:1.2;color:var(--navy-900);}
+  .brand-text .l1{display:block;font-size:13.5px;font-weight:700;letter-spacing:0.02em;}
+  .brand-text .l2{display:block;font-size:13.5px;font-weight:700;letter-spacing:0.02em;}
+
+  nav.primary{display:flex;gap:2px;flex:1;position:relative;}
+  nav.primary > .navitem{position:relative;}
+  nav.primary button.toplevel{
+    background:none;border:none;color:var(--ink);font-size:14px;font-weight:600;
+    padding:14px 15px;letter-spacing:0.01em;position:relative;
+  }
+  nav.primary button.toplevel::after{content:"";position:absolute;left:15px;right:15px;bottom:8px;height:2px;background:var(--sky-500);transform:scaleX(0);transition:transform .18s;}
+  nav.primary button.toplevel:hover::after,
+  nav.primary button.toplevel[aria-current="page"]::after{transform:scaleX(1);}
+  nav.primary button.toplevel[aria-current="page"]{color:var(--sky-600);}
+
+  .mega{
+    position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);
+    padding:26px;display:none;z-index:70;border-radius:var(--radius-m);
+  }
+  .navitem:hover .mega{display:flex;}
+  .mega.townships{width:640px;gap:26px;}
+  .mega-tabs{display:flex;flex-direction:column;gap:4px;min-width:150px;border-right:1px solid var(--border);padding-right:22px;}
+  .mega-tabs button{background:none;border:none;text-align:left;padding:9px 10px;border-radius:var(--radius-s);font-size:13.5px;font-weight:600;color:var(--ink-soft);}
+  .mega-tabs button.active{background:var(--sky-100);color:var(--sky-600);}
+  .mega-body{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mega-body a{padding:9px 10px;border-radius:var(--radius-s);font-size:13.5px;color:var(--ink);}
+  .mega-body a:hover{background:var(--sky-100);color:var(--sky-600);}
+  .mega.solutions{width:560px;}
+  .mega.solutions .mega-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .mega.solutions .mega-cell{display:flex;flex-direction:column;gap:6px;}
+  .mega.solutions .mega-cell svg{width:20px;height:20px;color:var(--sky-600);}
+  .mega.solutions .mega-cell b{font-size:13px;color:var(--ink);}
+  .mega.solutions .mega-cell span{font-size:11.5px;color:var(--ink-soft);}
+
+  .nav-actions{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+  .icon-btn{background:none;border:none;color:var(--ink-soft);width:34px;height:34px;display:grid;place-items:center;border-radius:50%;}
+  .icon-btn:hover{background:var(--sky-100);color:var(--sky-600);}
+  .cta-btn{background:var(--sky-500);color:#fff;border:none;padding:11px 22px;border-radius:2px;font-weight:600;font-size:13.5px;letter-spacing:0.03em;}
+  .cta-btn:hover{background:var(--sky-600);}
+  .nav-toggle{display:none;background:none;border:none;color:var(--ink);width:40px;height:40px;}
+
+  main{display:block;}
+  section.page{display:none;}
+  section.page.active{display:block;animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  @media (prefers-reduced-motion: reduce){section.page.active{animation:none;}}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;background:var(--navy-900);color:#fff;overflow:hidden;min-height:560px;display:flex;align-items:flex-end;}
+  .hero svg.bg,.hero img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg, rgba(6,20,38,0.88) 0%, rgba(6,20,38,0.35) 55%, rgba(6,20,38,0.05) 100%);}
+  .hero-inner{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 32px 64px;width:100%;}
+  .hero-inner .eyebrow{color:var(--gold-500);}
+  .hero-inner .eyebrow::before{background:var(--gold-500);}
+  .hero h1{color:#fff;max-width:16ch;margin-bottom:16px;}
+  .hero p.lead{color:#DCE6F2;font-size:16.5px;max-width:52ch;margin-bottom:26px;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+
+  .region-strip{background:var(--surface);border-bottom:1px solid var(--border);}
+  .region-tabs{display:flex;gap:0;max-width:1240px;margin:0 auto;padding:0 32px;overflow-x:auto;}
+  .region-tabs button{background:none;border:none;padding:15px 20px;font-size:13.5px;font-weight:600;color:var(--ink-soft);border-bottom:2px solid transparent;white-space:nowrap;}
+  .region-tabs button.active{color:var(--navy-900);border-bottom-color:var(--sky-500);}
+
+  /* ---------- Category tiles (Megaworld-style: Townships / Residences / etc.) ---------- */
+  .tile-section{padding:66px 0;}
+  .tile-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:32px;flex-wrap:wrap;}
+  .tile-head p{max-width:52ch;margin:0;}
+  .tile-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:260px 260px;gap:18px;}
+  .tile{position:relative;border-radius:var(--radius-m);overflow:hidden;color:#fff;display:flex;align-items:flex-end;padding:22px;isolation:isolate;}
+  .tile svg.tbg,.tile img.tbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+  .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg, rgba(6,20,38,0.85), rgba(6,20,38,0.05) 65%);z-index:-1;}
+  .tile.big{grid-row:span 2;}
+  .tile h4{font-family:var(--font-head);color:#fff;font-size:22px;margin:0 0 4px;}
+  .tile span{font-size:12.5px;color:#D9E4F0;}
+  .tile .arrow{position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.15);display:grid;place-items:center;border:1px solid rgba(255,255,255,0.3);}
+  .tile .arrow svg{width:15px;height:15px;}
+  .tile:hover{outline:2px solid var(--sky-500);outline-offset:-2px;}
+
+  /* ---------- Township card grid (photo cards + sidebar) ---------- */
+  .needs-section{padding:12px 0 76px;}
+  .needs-layout{display:grid;grid-template-columns:1.55fr 1fr;gap:40px;align-items:start;}
+  .needs-intro p{max-width:58ch;}
+  .town-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px;}
+  .town-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);overflow:hidden;transition:transform .18s, box-shadow .18s;}
+  .town-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+  .town-thumb{aspect-ratio:4/3;width:100%;overflow:hidden;}
+  .town-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .town-body{padding:16px 16px 18px;}
+  .town-body h4{font-family:var(--font-head);font-size:16px;font-weight:600;margin:0 0 3px;}
+  .town-body span{font-size:12.5px;color:var(--ink-soft);}
+  .town-body .view{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--sky-600);background:none;border:none;padding:0;}
+  .side-panel{background:var(--navy-900);color:#fff;border-radius:var(--radius-m);padding:30px 26px;position:sticky;top:96px;}
+  .side-panel .eyebrow{color:var(--gold-500);}
+  .side-panel .eyebrow::before{background:var(--gold-500);}
+  .side-panel h3{color:#fff;font-family:var(--font-head);font-size:22px;margin-bottom:16px;}
+  .need-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+  .need-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-m);padding:14px 12px;}
+  .need-item svg{width:20px;height:20px;color:var(--sky-500);margin-bottom:10px;}
+  .need-item p{color:#fff;font-size:13px;font-weight:600;margin:0 0 3px;}
+  .need-item span{color:#93A7C2;font-size:11px;}
+
+  /* ---------- Generic content sections ---------- */
+  .content-hero{padding:60px 0 36px;border-bottom:1px solid var(--border);}
+  .content-hero p{max-width:60ch;}
+  .simple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding:50px 0 74px;}
+  .simple-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);padding:26px;}
+  .simple-card .n{font-family:var(--font-head);font-size:13px;color:var(--sky-600);font-weight:700;margin-bottom:10px;}
+  .value-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:0 0 64px;}
+  .value-item{padding:24px;border-top:3px solid var(--gold-500);background:var(--sky-100);border-radius:0 0 var(--radius-m) var(--radius-m);}
+
+  .news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding:50px 0 74px;}
+  .news-card{border:1px solid var(--border);border-radius:var(--radius-m);overflow:hidden;background:var(--surface);}
+  .news-thumb{height:150px;background:linear-gradient(135deg,var(--navy-900),var(--sky-500));}
+  .news-body{padding:18px;}
+  .news-date{font-size:12px;color:var(--sky-600);font-weight:600;margin-bottom:8px;display:block;letter-spacing:0.05em;}
+
+  .job-list{display:flex;flex-direction:column;gap:12px;padding:50px 0 74px;}
+  .job-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 22px;border:1px solid var(--border);border-radius:var(--radius-m);background:var(--surface);flex-wrap:wrap;}
+  .job-row h4{margin:0 0 4px;font-family:var(--font-head);}
+  .job-meta{font-size:13px;color:var(--ink-soft);}
+
+  /* ---------- Automation ---------- */
+  .automation-hero{background:linear-gradient(120deg, var(--navy-900) 0%, #163C68 100%);color:#fff;padding:66px 0 56px;position:relative;}
+  .automation-hero .eyebrow{color:var(--gold-500);}
+  .automation-hero .eyebrow::before{background:var(--gold-500);}
+  .automation-hero h1{color:#fff;max-width:18ch;}
+  .automation-hero p.lead{color:#D9E4F0;max-width:56ch;}
+  .status-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(89,163,224,0.18);border:1px solid rgba(89,163,224,0.5);color:#BEE0FF;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:2px;margin-bottom:18px;}
+  .status-pill .dot{width:6px;height:6px;border-radius:50%;background:#59D08A;}
+
+  .automation-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding:54px 0 40px;}
+  .system-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);padding:28px;display:flex;flex-direction:column;gap:14px;transition:transform .18s, box-shadow .18s, border-color .18s;}
+  .system-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--sky-500);}
+  .system-icon{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;background:var(--sky-100);color:var(--sky-600);}
+  .system-icon svg{width:24px;height:24px;}
+  .system-card h3{margin-bottom:2px;font-family:var(--font-head);font-size:19px;}
+  .system-tag{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .system-desc{font-size:14px;color:var(--ink-soft);flex:1;margin:0;}
+  .system-meta{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 6px;}
+  .chip{font-size:11.5px;font-weight:600;color:var(--ink-soft);background:var(--sky-100);border-radius:2px;padding:4px 10px;border:1px solid var(--border);}
+  .system-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;}
+  .launch-btn{background:var(--navy-900);color:#fff;border:none;border-radius:2px;padding:10px 16px;font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:8px;}
+  .launch-btn:hover{background:var(--sky-500);}
+  .launch-btn svg{width:14px;height:14px;}
+  .uptime{font-size:12px;color:#2FA86A;font-weight:600;}
+  .automation-note{background:var(--sky-100);border:1px dashed var(--border);border-radius:var(--radius-m);padding:18px 20px;font-size:13.5px;color:var(--ink-soft);margin:6px 0 60px;}
+  .automation-note strong{color:var(--ink);}
+  .how-it-works{padding:0 0 74px;}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px;}
+  .step{padding:20px;border-left:2px solid var(--border);}
+  .step .idx{font-family:var(--font-head);font-weight:700;color:var(--sky-600);font-size:14px;margin-bottom:8px;}
+
+  /* ---------- Footer (Megaworld-style: centered logo, address, socials, link cols) ---------- */
+  footer.site{background:var(--navy-900);color:#B7C7DB;padding:56px 0 0;margin-top:20px;}
+  .footer-brand{text-align:center;padding-bottom:26px;}
+  .footer-brand svg{width:52px;height:52px;margin:0 auto 14px;}
+  .footer-brand .name{font-family:var(--font-head);color:#fff;font-size:17px;letter-spacing:0.02em;}
+  .footer-brand .addr{font-size:13px;margin-top:8px;color:#8FA6C6;}
+  .footer-social{display:flex;justify-content:center;gap:14px;padding:18px 0;}
+  .footer-social a{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:grid;place-items:center;}
+  .footer-social a:hover{background:var(--sky-500);border-color:var(--sky-500);}
+  .footer-social svg{width:15px;height:15px;color:#fff;}
+  .footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;padding:20px 0 30px;border-top:1px solid rgba(255,255,255,0.1);border-bottom:1px solid rgba(255,255,255,0.1);}
+  .footer-links a{font-size:13px;color:#B7C7DB;}
+  .footer-links a:hover{color:#fff;}
+  .footer-strip{padding:20px 0;text-align:center;font-size:12px;color:#6E88AA;}
+  .back-to-top{position:fixed;right:20px;bottom:86px;width:44px;height:44px;border-radius:50%;background:var(--navy-900);color:#fff;border:1px solid rgba(255,255,255,0.2);display:none;place-items:center;z-index:55;box-shadow:var(--shadow);}
+  .back-to-top.show{display:grid;}
+  .back-to-top svg{width:17px;height:17px;}
+
+  /* ---------- Virtual assistant widget ---------- */
+  .chat-fab{position:fixed;right:20px;bottom:20px;z-index:80;background:var(--sky-500);color:#fff;border:none;width:58px;height:58px;border-radius:50%;box-shadow:0 12px 26px rgba(89,163,224,0.5);display:grid;place-items:center;}
+  .chat-fab:hover{background:var(--sky-600);}
+  .chat-fab svg{width:26px;height:26px;}
+  .chat-panel{position:fixed;right:20px;bottom:88px;width:310px;max-width:calc(100vw - 40px);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);z-index:80;display:none;overflow:hidden;}
+  .chat-panel.open{display:block;}
+  .chat-head{background:var(--navy-900);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:10px;}
+  .chat-head .av{width:34px;height:34px;border-radius:50%;background:var(--sky-500);display:grid;place-items:center;font-family:var(--font-head);font-weight:700;font-size:14px;}
+  .chat-head b{display:block;font-size:13.5px;}
+  .chat-head span{display:block;font-size:11px;color:#9FB3CC;}
+  .chat-body{padding:16px 18px;font-size:13px;color:var(--ink-soft);}
+  .chat-bubble{background:var(--sky-100);color:var(--ink);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:13px;}
+  .chat-foot{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);}
+  .chat-foot input{flex:1;border:1px solid var(--border);border-radius:20px;padding:9px 14px;font-size:13px;background:var(--cream);color:var(--ink);}
+  .chat-foot button{background:var(--sky-500);color:#fff;border:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;}
+  .chat-foot button svg{width:15px;height:15px;}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:980px){
+    nav.primary{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);flex-direction:column;padding:10px 20px 18px;border-bottom:1px solid var(--border);}
+    nav.primary.open{display:flex;}
+    nav.primary button.toplevel{text-align:left;width:100%;}
+    .mega{position:static;display:none !important;box-shadow:none;border:none;transform:none;width:auto !important;padding:6px 0 6px 14px;}
+    .navitem.open .mega{display:flex !important;}
+    .nav-toggle{display:grid;place-items:center;}
+    .tile-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
+    .tile.big{grid-column:span 2;grid-row:auto;height:260px;}
+    .tile{height:200px;}
+    .simple-grid,.value-row,.news-grid,.automation-grid,.steps{grid-template-columns:1fr 1fr;}
+    .needs-layout{grid-template-columns:1fr;}
+    .town-grid{grid-template-columns:1fr 1fr;}
+    .side-panel{position:static;}
+  }
+  @media (max-width:600px){
+    .wrap{padding:0 18px;}
+    .nav-row{padding:12px 18px;}
+    .tile-grid{grid-template-columns:1fr;}
+    .tile.big{grid-column:auto;}
+    .simple-grid,.value-row,.news-grid,.automation-grid,.steps{grid-template-columns:1fr;}
+    .town-grid{grid-template-columns:1fr;}
+    .chat-panel{right:10px;bottom:82px;}
+    .chat-fab{right:14px;bottom:14px;}
+    .back-to-top{right:14px;bottom:78px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav-row">
+    <a href="#home" class="brand" data-nav="home">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="4" fill="#0B2A4D"/>
+        <path d="M8 27V16L14 11L20 16V27" stroke="#59A3E0" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M14 27V20L20 16L26 20V27" stroke="#C9A227" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M20 27V17L26 12L32 17V27" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+        <line x1="6" y1="27" x2="34" y2="27" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-text"><span class="l1">INTEGRATED TOWN</span><span class="l2">MANAGEMENT CORP.</span></span>
+    </a>
+
+    <nav class="primary" id="primaryNav">
+      <div class="navitem"><button class="toplevel" data-nav="home" aria-current="page">Home</button></div>
+      <div class="navitem"><button class="toplevel" data-nav="about">About Us</button></div>
+
+      <div class="navitem">
+        <button class="toplevel" data-nav="townships">Our Townships</button>
+        <div class="mega townships">
+          <div class="mega-tabs">
+            <button class="active" data-region="metro">Metro Manila</button>
+            <button data-region="luzon">Luzon</button>
+            <button data-region="visayas">Visayas</button>
+            <button data-region="mindanao">Mindanao</button>
+          </div>
+          <div class="mega-body" id="megaTownshipBody">
+            <a data-nav="townships">McKinley Hill</a>
+            <a data-nav="townships">Eastwood City</a>
+            <a data-nav="townships">The Fort</a>
+            <a data-nav="townships">Uptown Bonifacio</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="navitem">
+        <button class="toplevel" data-nav="solutions">Solutions</button>
+        <div class="mega solutions">
+          <div class="mega-grid">
+            <div class="mega-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/></svg><b>Security & Safety</b><span>24/7 monitoring</span></div>
+            <div class="mega-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="9" width="13" height="8" rx="1"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="17.5" cy="18.5" r="1.5"/></svg><b>Traffic</b><span>Smoother mobility</span></div>
+            <div class="mega-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 8h3.5a2.5 2.5 0 010 5H9V8z"/></svg><b>Parking</b><span>Organized spaces</span></div>
+            <div class="mega-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3l7 7-8.5 8.5a3 3 0 01-4.24 0L6 16.24a3 3 0 010-4.24L14 3z"/></svg><b>Facilities</b><span>Proactive upkeep</span></div>
+            <div class="mega-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5-2 8-6 8-11V5l-8-3-8 3v6c0 5 3 9 8 11z"/></svg><b>Environment</b><span>Cleaner utilities</span></div>
+            <div class="mega-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg><b>Resident Services</b><span>Seamless support</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="navitem"><button class="toplevel" data-nav="automation">Automation</button></div>
+      <div class="navitem"><button class="toplevel" data-nav="news">News & Updates</button></div>
+      <div class="navitem"><button class="toplevel" data-nav="careers">Careers</button></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn" aria-label="Search" onclick="alert('Demo site — search is not wired up.')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="cta-btn" data-nav="contact">Contact Us</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HOME ============ -->
+  <section class="page active" id="page-home">
+    <div class="hero">
+      <img class="bg" src="https://images.unsplash.com/photo-1518235506717-e1ed3306a89b?fm=jpg&q=80&w=1800&auto=format&fit=crop" alt="">
+      <div class="hero-overlay"></div>
+      <div class="hero-inner">
+        <div class="eyebrow">Live · Work · Play · Learn</div>
+        <h1>Integrated Town Management Corporation</h1>
+        <p class="lead">We bring together people, technology, and efficient operations to create safe, sustainable, and vibrant townships — each with its own needs, run on one integrated platform.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" data-nav="townships">Explore our townships</button>
+          <button class="btn btn-on-dark" data-nav="automation">View automation systems</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="region-strip">
+      <div class="region-tabs">
+        <button class="active">Metro Manila</button>
+        <button>Luzon</button>
+        <button>Visayas</button>
+        <button>Mindanao</button>
+      </div>
+    </div>
+
+    <div class="wrap tile-section">
+      <div class="tile-head">
+        <div>
+          <div class="eyebrow">What we manage</div>
+          <h2>One operating standard, every township</h2>
+        </div>
+        <p>Every township has its own community, environment, and operational needs — our team applies the same integrated management standard to each.</p>
+      </div>
+      <div class="tile-grid">
+        <div class="tile big" data-nav="townships">
+          <img class="tbg" src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?fm=jpg&q=80&w=1200&auto=format&fit=crop" alt="">
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          <div><h4>Townships</h4><span>12+ integrated communities nationwide</span></div>
+        </div>
+        <div class="tile" data-nav="solutions">
+          <img class="tbg" src="https://images.unsplash.com/photo-1534298261662-f8fdd25317db?fm=jpg&q=80&w=900&auto=format&fit=crop" alt="">
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          <div><h4>Solutions</h4><span>Security, traffic, facilities & more</span></div>
+        </div>
+        <div class="tile" data-nav="automation">
+          <img class="tbg" src="https://images.unsplash.com/photo-1507961455425-0caef37ef6fe?fm=jpg&q=80&w=900&auto=format&fit=crop" alt="">
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          <div><h4>Automation</h4><span>Systems running daily operations</span></div>
+        </div>
+        <div class="tile" data-nav="townships">
+          <img class="tbg" src="https://images.unsplash.com/photo-1632591626877-835f0d2943c0?fm=jpg&q=80&w=900&auto=format&fit=crop" alt="">
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          <div><h4>Resident Services</h4><span>Support across every community</span></div>
+        </div>
+        <div class="tile" data-nav="news">
+          <img class="tbg" src="https://images.unsplash.com/photo-1541423408854-5df732b6f6d1?fm=jpg&q=80&w=900&auto=format&fit=crop" alt="">
+          <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg></div>
+          <div><h4>News & Updates</h4><span>What's rolling out this quarter</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap needs-section">
+      <div class="needs-layout">
+        <div class="needs-intro">
+          <div class="eyebrow">Township solutions</div>
+          <h2>Township needs, one integrated solution</h2>
+          <p>Every township has its own community, environment, and operational needs. Our integrated town management approach provides customized solutions for a safer, more efficient, and more sustainable future.</p>
+
+          <div class="town-grid">
+            <div class="town-card">
+              <div class="town-thumb"><img src="https://images.unsplash.com/photo-1493134799591-2c9eed26201a?fm=jpg&q=80&w=700&auto=format&fit=crop" alt="McKinley Hill"></div>
+              <div class="town-body"><h4>McKinley Hill</h4><span>Business, residential, and lifestyle needs</span><button class="view" data-nav="townships">View details</button></div>
+            </div>
+            <div class="town-card">
+              <div class="town-thumb"><img src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?fm=jpg&q=80&w=700&auto=format&fit=crop" alt="Eastwood City"></div>
+              <div class="town-body"><h4>Eastwood City</h4><span>Retail, work, and community living</span><button class="view" data-nav="townships">View details</button></div>
+            </div>
+            <div class="town-card">
+              <div class="town-thumb"><img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?fm=jpg&q=80&w=700&auto=format&fit=crop" alt="The Fort"></div>
+              <div class="town-body"><h4>The Fort</h4><span>Premium living and business hubs</span><button class="view" data-nav="townships">View details</button></div>
+            </div>
+            <div class="town-card">
+              <div class="town-thumb"><img src="https://images.unsplash.com/photo-1632591626877-835f0d2943c0?fm=jpg&q=80&w=700&auto=format&fit=crop" alt="Boracay Newcoast"></div>
+              <div class="town-body"><h4>Boracay Newcoast</h4><span>Leisure, tourism, and sustainable living</span><button class="view" data-nav="townships">View details</button></div>
+            </div>
+            <div class="town-card">
+              <div class="town-thumb"><img src="https://images.unsplash.com/photo-1512531123205-560f5974e686?fm=jpg&q=80&w=700&auto=format&fit=crop" alt="Iloilo Business Park"></div>
+              <div class="town-body"><h4>Iloilo Business Park</h4><span>Innovation, tourism, and growth</span><button class="view" data-nav="townships">View details</button></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <div class="eyebrow">Township needs</div>
+          <h3>Tailored solutions for every community</h3>
+          <div class="need-grid">
+            <div class="need-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/></svg><p>Security & safety</p><span>24/7 monitoring, incident response</span></div>
+            <div class="need-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="9" width="13" height="8" rx="1"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="17.5" cy="18.5" r="1.5"/></svg><p>Traffic management</p><span>Smoother mobility, less congestion</span></div>
+            <div class="need-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 8h3.5a2.5 2.5 0 010 5H9V8z"/></svg><p>Parking management</p><span>Efficient and organized spaces</span></div>
+            <div class="need-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3l7 7-8.5 8.5a3 3 0 01-4.24 0L6 16.24a3 3 0 010-4.24L14 3z"/></svg><p>Facility maintenance</p><span>Proactive, responsive services</span></div>
+            <div class="need-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5-2 8-6 8-11V5l-8-3-8 3v6c0 5 3 9 8 11z"/></svg><p>Environment & utilities</p><span>Cleaner, greener, more sustainable</span></div>
+            <div class="need-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg><p>Resident services</p><span>Seamless and convenient support</span></div>
+          </div>
+          <button class="btn btn-primary" data-nav="solutions">Explore our solutions</button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="page" id="page-about">
+    <div class="wrap content-hero">
+      <div class="eyebrow">About us</div>
+      <h1>Built to run townships as one connected system</h1>
+      <p>Integrated Town Management Corporation (ITMC) was formed to give master-planned communities a single operating layer — one platform coordinating security, traffic, facilities, and resident services across every township we manage.</p>
+    </div>
+    <div class="wrap value-row">
+      <div class="value-item"><h3>Our mandate</h3><p style="margin:0;font-size:14px;">Operate shared township infrastructure so each community stays safe, efficient, and pleasant to live in.</p></div>
+      <div class="value-item"><h3>Our approach</h3><p style="margin:0;font-size:14px;">Pair on-the-ground teams with software that automates the repetitive parts of township operations.</p></div>
+      <div class="value-item"><h3>Our footprint</h3><p style="margin:0;font-size:14px;">12+ townships nationwide, from urban business districts to island tourism estates.</p></div>
+      <div class="value-item"><h3>Our promise</h3><p style="margin:0;font-size:14px;">Faster response times, clearer reporting, and fewer manual handoffs for every stakeholder.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ TOWNSHIPS ============ -->
+  <section class="page" id="page-townships">
+    <div class="wrap content-hero">
+      <div class="eyebrow">Our townships</div>
+      <h1>Twelve communities, one management standard</h1>
+      <p>Each township keeps its own character while running on the same ITMC operating standard for safety, maintenance, and resident services.</p>
+    </div>
+    <div class="wrap simple-grid">
+      <div class="simple-card"><div class="n">Metro Manila</div><h3>McKinley Hill</h3><p style="font-size:14px;">Business, residential, and lifestyle township with embedded security and facilities teams.</p></div>
+      <div class="simple-card"><div class="n">Metro Manila</div><h3>Eastwood City</h3><p style="font-size:14px;">One of the country's first cyberparks — dense retail, office, and residential mix.</p></div>
+      <div class="simple-card"><div class="n">Metro Manila</div><h3>The Fort</h3><p style="font-size:14px;">Premium residential and commercial corridor with 24/7 monitored operations.</p></div>
+      <div class="simple-card"><div class="n">Aklan</div><h3>Boracay Newcoast</h3><p style="font-size:14px;">Leisure and tourism estate with a strong environmental management program.</p></div>
+      <div class="simple-card"><div class="n">Iloilo</div><h3>Iloilo Business Park</h3><p style="font-size:14px;">Fast-growing regional business and lifestyle hub in Western Visayas.</p></div>
+      <div class="simple-card"><div class="n">+7 more</div><h3>Nationwide townships</h3><p style="font-size:14px;">Additional communities under the same integrated operating standard.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ SOLUTIONS ============ -->
+  <section class="page" id="page-solutions">
+    <div class="wrap content-hero">
+      <div class="eyebrow">Solutions</div>
+      <h1>Six operational pillars, one platform</h1>
+      <p>Every solution below is customized per township, then rolled up into the same reporting and response standard.</p>
+    </div>
+    <div class="wrap simple-grid">
+      <div class="simple-card"><div class="n">01</div><h3>Security & safety</h3><p style="font-size:14px;">24/7 monitoring, patrol coordination, and incident response.</p></div>
+      <div class="simple-card"><div class="n">02</div><h3>Traffic management</h3><p style="font-size:14px;">Smoother mobility and congestion planning at peak hours.</p></div>
+      <div class="simple-card"><div class="n">03</div><h3>Parking management</h3><p style="font-size:14px;">Efficient, organized, and trackable parking capacity.</p></div>
+      <div class="simple-card"><div class="n">04</div><h3>Facility maintenance</h3><p style="font-size:14px;">Proactive upkeep with fast fault-to-fix response.</p></div>
+      <div class="simple-card"><div class="n">05</div><h3>Environment & utilities</h3><p style="font-size:14px;">Cleaner operations and more sustainable resource use.</p></div>
+      <div class="simple-card"><div class="n">06</div><h3>Resident services</h3><p style="font-size:14px;">Seamless request handling and community support.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ AUTOMATION ============ -->
+  <section class="page" id="page-automation">
+    <div class="automation-hero">
+      <div class="wrap">
+        <div class="status-pill"><span class="dot"></span> Demo environment — sample systems below</div>
+        <div class="eyebrow">Automation</div>
+        <h1>Every township system, one command center</h1>
+        <p class="lead">These are the internal automation systems ITMC teams use to run day-to-day township operations. Select a system to launch its demo environment in a new tab.</p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="automation-grid">
+
+        <div class="system-card">
+          <div class="system-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6M9 16h6M9 8h3"/><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5"/></svg>
+          </div>
+          <div><h3>CGS Ordering System</h3><span class="system-tag">Central Ground Services</span></div>
+          <p class="system-desc">This where the township can buy anything in CGS.</p>
+          <div class="system-meta"><span class="chip">Google Sheets backend</span><span class="chip">Auto-fill</span></div>
+          <div class="system-footer">
+            <span class="uptime">● System online</span>
+            <a class="launch-btn" href="https://itmcdev26.github.io/CGScentral/" target="_blank" rel="noopener">Launch System
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+          </div>
+        </div>
+
+        <div class="system-card">
+          <div class="system-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7"/><path d="M17 8a3 3 0 100-6"/><path d="M22 21c0-3-1.8-5.4-4.5-6.4"/></svg>
+          </div>
+          <div><h3>Asset Management System</h3><span class="system-tag">Asset Recording</span></div>
+          <p class="system-desc">Assets must be log here before deployment. </p>
+          <div class="system-meta"><span class="chip">Admin account</span><span class="chip">Announcements</span></div>
+          <div class="system-footer">
+            <span class="uptime">● System online</span>
+            <a class="launch-btn" href="https://incident-dashboard-topaz.vercel.app/" target="_blank" rel="noopener">Launch System
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+          </div>
+        </div>
+
+        <div class="system-card">
+          <div class="system-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/><path d="M12 8v5l3 2"/></svg>
+          </div>
+          <div><h3>Unified Dashboard</h3><span class="system-tag">Security & incident reporting</span></div>
+          <p class="system-desc">Security incident reporting dashboard and admin panel covering 14 townships, giving safety teams one shared view of open incidents.</p>
+          <div class="system-meta"><span class="chip">14 townships</span><span class="chip">Admin panel</span></div>
+          <div class="system-footer">
+            <span class="uptime">● System online</span>
+            <a class="launch-btn" href="https://incident-dashboard-topaz.vercel.app/" target="_blank" rel="noopener">Launch System
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="automation-note"><strong>Note:</strong> links above open sample demo environments with placeholder data for walkthrough purposes. Swap each <code>href</code> in the page source for your live system URL when you're ready to go live.</div>
+
+      <div class="how-it-works">
+        <div class="eyebrow">How automation fits in</div>
+        <h2>From resident request to resolved ticket</h2>
+        <div class="steps">
+          <div class="step"><div class="idx">01</div><h4>Request comes in</h4><p style="font-size:13.5px;margin:0;">Through EMD Form Request, Nimbly Pod, or a front-desk report.</p></div>
+          <div class="step"><div class="idx">02</div><h4>System logs it</h4><p style="font-size:13.5px;margin:0;">Every request is timestamped and routed to the right team automatically.</p></div>
+          <div class="step"><div class="idx">03</div><h4>Team responds</h4><p style="font-size:13.5px;margin:0;">Security, facilities, or HR staff act on it from the Unified Dashboard.</p></div>
+          <div class="step"><div class="idx">04</div><h4>Status is visible</h4><p style="font-size:13.5px;margin:0;">Admins and residents can track progress without a phone call.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEWS ============ -->
+  <section class="page" id="page-news">
+    <div class="wrap content-hero">
+      <div class="eyebrow">News & updates</div>
+      <h1>What's new across our townships</h1>
+      <p>Announcements, rollouts, and milestones from ITMC and the communities we manage.</p>
+    </div>
+    <div class="wrap news-grid">
+      <div class="news-card"><div class="news-thumb"></div><div class="news-body"><span class="news-date">Sept 2026</span><h3>Unified Dashboard rolls out to 14 townships</h3><p style="font-size:13.5px;margin:0;">Security teams now share one incident-reporting view across every managed community.</p></div></div>
+      <div class="news-card"><div class="news-thumb"></div><div class="news-body"><span class="news-date">Aug 2026</span><h3>Nimbly Pod HR system moves to real-time sync</h3><p style="font-size:13.5px;margin:0;">Staff accounts and announcements now update instantly across all sites.</p></div></div>
+      <div class="news-card"><div class="news-thumb"></div><div class="news-body"><span class="news-date">Jul 2026</span><h3>EMD Form Request launches auto-fill</h3><p style="font-size:13.5px;margin:0;">ID-based auto-fill cuts form processing time for IOM, PRF, and Disposal requests.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ============ CAREERS ============ -->
+  <section class="page" id="page-careers">
+    <div class="wrap content-hero">
+      <div class="eyebrow">Careers</div>
+      <h1>Help us run townships better</h1>
+      <p>We're hiring across operations, safety, and software — people who want to make everyday township life easier.</p>
+    </div>
+    <div class="wrap job-list">
+      <div class="job-row"><div><h4>Township Operations Manager</h4><span class="job-meta">McKinley Hill · Full-time</span></div><button class="btn btn-outline">View role</button></div>
+      <div class="job-row"><div><h4>Security Operations Analyst</h4><span class="job-meta">Unified Dashboard team · Full-time</span></div><button class="btn btn-outline">View role</button></div>
+      <div class="job-row"><div><h4>Product Engineer, Automation Systems</h4><span class="job-meta">Remote · Full-time</span></div><button class="btn btn-outline">View role</button></div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="page" id="page-contact">
+    <div class="wrap content-hero">
+      <div class="eyebrow">Contact us</div>
+      <h1>Let's talk about your township</h1>
+      <p>Reach the ITMC team for partnership, operations, or media inquiries. This demo form doesn't send data anywhere.</p>
+    </div>
+    <div class="wrap" style="max-width:560px;padding-bottom:74px;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <input type="text" placeholder="Full name" style="padding:13px 14px;border:1px solid var(--border);border-radius:var(--radius-s);background:var(--surface);color:var(--ink);">
+        <input type="email" placeholder="Email address" style="padding:13px 14px;border:1px solid var(--border);border-radius:var(--radius-s);background:var(--surface);color:var(--ink);">
+        <textarea placeholder="How can we help?" rows="4" style="padding:13px 14px;border:1px solid var(--border);border-radius:var(--radius-s);background:var(--surface);color:var(--ink);font-family:inherit;"></textarea>
+        <button class="btn btn-primary" style="align-self:flex-start;" onclick="alert('Demo form — no message was actually sent.')">Send message</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="footer-brand">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="4" fill="#123B6B"/>
+        <path d="M8 27V16L14 11L20 16V27" stroke="#59A3E0" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M14 27V20L20 16L26 20V27" stroke="#C9A227" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M20 27V17L26 12L32 17V27" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+        <line x1="6" y1="27" x2="34" y2="27" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="name">Integrated Town Management Corporation</div>
+      <div class="addr">36th Street corner 11th Avenue, Uptown Bonifacio, Taguig City</div>
+    </div>
+    <div class="footer-social">
+      <a href="#" aria-label="Facebook" onclick="return false;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.5c0-.9.3-1.5 1.6-1.5H16.5V4.3C16.2 4.2 15.2 4 14 4c-2.4 0-4 1.5-4 4.2V10.5H7.5v3H10V21h3.5z"/></svg></a>
+      <a href="#" aria-label="Instagram" onclick="return false;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1"/></svg></a>
+      <a href="#" aria-label="X" onclick="return false;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="1.8"/></svg></a>
+      <a href="#" aria-label="YouTube" onclick="return false;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="6" width="17" height="12" rx="3"/><path d="M10.5 9.5l4 2.5-4 2.5z" fill="currentColor" stroke="none"/></svg></a>
+    </div>
+    <div class="footer-links">
+      <a data-nav="about" href="#about">About Us</a>
+      <a data-nav="townships" href="#townships">Our Townships</a>
+      <a data-nav="solutions" href="#solutions">Solutions</a>
+      <a data-nav="automation" href="#automation">Automation</a>
+      <a data-nav="news" href="#news">News & Media</a>
+      <a data-nav="careers" href="#careers">Careers</a>
+      <a data-nav="contact" href="#contact">Contact Us</a>
+    </div>
+    <div class="footer-strip">Copyright © 2026 Integrated Town Management Corporation. All rights reserved. · Sitemap · Privacy Policy · Terms and Conditions</div>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<button class="chat-fab" id="chatFab" aria-label="Open virtual assistant">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div class="av">A</div>
+    <div><b>Ana</b><span>Your ITMC virtual assistant</span></div>
+  </div>
+  <div class="chat-body">
+    <div class="chat-bubble">Hi there! I'm Ana. Ask me about a township, a solution, or one of our automation systems.</div>
+  </div>
+  <div class="chat-foot">
+    <input type="text" placeholder="Type a message…">
+    <button aria-label="Send" onclick="alert('Demo assistant — replies aren\'t wired up yet.')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var pages = document.querySelectorAll('section.page');
+  var navBtns = document.querySelectorAll('[data-nav]');
+  var primaryNav = document.getElementById('primaryNav');
+  var navToggle = document.getElementById('navToggle');
+
+  function go(id){
+    pages.forEach(function(p){ p.classList.toggle('active', p.id === 'page-' + id); });
+    document.querySelectorAll('nav.primary button.toplevel').forEach(function(b){
+      if (b.getAttribute('data-nav') === id) b.setAttribute('aria-current','page');
+      else b.removeAttribute('aria-current');
+    });
+    primaryNav.classList.remove('open');
+    document.querySelectorAll('.navitem.open').forEach(function(n){ n.classList.remove('open'); });
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+    if (history.replaceState) history.replaceState(null, '', '#' + id);
+  }
+
+  navBtns.forEach(function(b){
+    b.addEventListener('click', function(e){
+      var id = b.getAttribute('data-nav');
+      if (!id) return;
+      e.preventDefault();
+      go(id);
+    });
+  });
+
+  navToggle.addEventListener('click', function(){
+    primaryNav.classList.toggle('open');
+  });
+
+  // Mobile: tap top-level item toggles its mega panel instead of navigating away
+  document.querySelectorAll('.navitem').forEach(function(item){
+    var btn = item.querySelector('button.toplevel');
+    var mega = item.querySelector('.mega');
+    if (!mega) return;
+    btn.addEventListener('click', function(e){
+      if (window.innerWidth <= 980){
+        e.preventDefault();
+        e.stopPropagation();
+        item.classList.toggle('open');
+      }
+    });
+  });
+
+  // Region tabs inside township mega menu (decorative — content stays illustrative)
+  var regionData = {
+    metro:['McKinley Hill','Eastwood City','The Fort','Uptown Bonifacio'],
+    luzon:['Southwoods City','Northill Gateway','Suntrust Ecotown','Capital Town'],
+    visayas:['Boracay Newcoast','Iloilo Business Park','Mactan Newtown','The Mactan Newtown'],
+    mindanao:['Davao Park District','Davao Newtown','Southern Gateway']
+  };
+  document.querySelectorAll('.mega-tabs button').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.mega-tabs button').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      var region = tab.getAttribute('data-region');
+      var body = document.getElementById('megaTownshipBody');
+      body.innerHTML = '';
+      (regionData[region]||[]).forEach(function(name){
+        var a = document.createElement('a');
+        a.setAttribute('data-nav','townships');
+        a.textContent = name;
+        a.addEventListener('click', function(e){ e.preventDefault(); go('townships'); });
+        body.appendChild(a);
+      });
+    });
+  });
+
+  // Home page region strip (visual only, mirrors the mega menu tabs)
+  document.querySelectorAll('.region-tabs button').forEach(function(b, i){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.region-tabs button').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+    });
+  });
+
+  var initial = (location.hash || '#home').replace('#','');
+  var valid = ['home','about','townships','solutions','automation','news','careers','contact'];
+  go(valid.indexOf(initial) !== -1 ? initial : 'home');
+
+  // Back to top
+  var backTop = document.getElementById('backTop');
+  window.addEventListener('scroll', function(){
+    backTop.classList.toggle('show', window.scrollY > 500);
+  });
+  backTop.addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  // Chat widget
+  var chatFab = document.getElementById('chatFab');
+  var chatPanel = document.getElementById('chatPanel');
+  chatFab.addEventListener('click', function(){ chatPanel.classList.toggle('open'); });
+})();
+</script>
+
+</body>
+</html>
